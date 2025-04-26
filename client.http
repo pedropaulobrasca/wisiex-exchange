@@ -1,1 +1,17 @@
-GET http://localhost:3333/health
+@base_url = http://localhost:3333
+@token = {{login.response.body.token}}
+
+GET {{base_url}}/health
+
+###
+# @name login
+POST {{base_url}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser"
+}
+
+### Get User
+GET {{base_url}}/auth/user
+Authorization: Bearer {{token}}

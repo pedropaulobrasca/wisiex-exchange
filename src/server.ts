@@ -5,6 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { createClient } from 'redis';
 import authRoutes from './interfaces/routes/auth.routes';
+import healthCheckRoutes from './interfaces/routes/health-check.routes';
 
 // Carrega variáveis de ambiente
 dotenv.config();
@@ -23,7 +24,7 @@ app.use(express.json());
 
 // Rotas
 app.use('/auth', authRoutes);
-
+app.use('/health', healthCheckRoutes);
 // Redis Client
 const redisClient = createClient({
   url: process.env.REDIS_URL,
