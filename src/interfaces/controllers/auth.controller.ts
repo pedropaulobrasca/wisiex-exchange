@@ -1,14 +1,21 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import prisma from '../../infrastructure/prisma/client';
+import z from 'zod';
 
 export const AuthController = {
   login: async (req: Request, res: Response) => {
-    const { username } = req.body;
+    const schema = z.object({
+      username: z.string().min(1),
+    });
 
-    if (!username) {
-      return res.status(400).json({ message: 'Username is required' });
+    const result = schema.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({ message: 'Invalid request body' });
     }
+
+    const { username } = result.data;
 
     let user = await prisma.user.findUnique({
       where: { username },

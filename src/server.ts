@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 import { createClient } from 'redis';
 import authRoutes from './interfaces/routes/auth.routes';
 import healthCheckRoutes from './interfaces/routes/health-check.routes';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerDocument } from './app/config/swagger';
 
 // Carrega variáveis de ambiente
 dotenv.config();
@@ -22,9 +24,15 @@ const io = new SocketIOServer(server, {
 app.use(cors());
 app.use(express.json());
 
-// Rotas
-app.use('/auth', authRoutes);
+// Rotas de saúde e documentação
 app.use('/health', healthCheckRoutes);
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// Rotas públicas
+app.use('/auth', authRoutes);
+
+// Rotas privadas
+
 // Redis Client
 const redisClient = createClient({
   url: process.env.REDIS_URL,
