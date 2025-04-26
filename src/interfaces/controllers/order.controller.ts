@@ -1,9 +1,10 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { z } from 'zod';
 import prisma from '../../infrastructure/prisma/client';
+import { AuthenticatedRequest } from '../middleware/auth.middleware';
 
 export class OrderController {
-  static async createOrder(req: Request, res: Response) {
+  static async createOrder(req: AuthenticatedRequest, res: Response) {
     const schema = z.object({
       type: z.enum(['BUY', 'SELL']),
       amount: z.number().positive(),
@@ -19,7 +20,7 @@ export class OrderController {
     const { type, amount, price } = result.data;
     
     try {
-      const userId = req.user!.userId;
+      const userId = req.user!.id;
 
       const order = await prisma.order.create({
         data: {

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import prisma from '../../infrastructure/prisma/client';
 import z from 'zod';
+import { AuthenticatedRequest } from '../middleware/auth.middleware';
 
 export const AuthController = {
   login: async (req: Request, res: Response) => {
@@ -38,5 +39,23 @@ export const AuthController = {
     );
 
     res.status(200).json({ token });
-  }
+  },
+
+  getUser: async (req: AuthenticatedRequest, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+    
+    const userId = req.user.id;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(user);
+  },
 }
