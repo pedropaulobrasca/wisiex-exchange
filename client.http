@@ -15,3 +15,25 @@ Content-Type: application/json
 ### Get User
 GET {{base_url}}/auth/user
 Authorization: Bearer {{token}}
+
+### Create BUY Order
+POST {{base_url}}/orders
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "type": "BUY",
+  "amount": 0.25,
+  "price": 45000
+}
+
+### Create SELL Order
+POST {{base_url}}/orders
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "type": "SELL",
+  "amount": 0.1,
+  "price": 55000
+}

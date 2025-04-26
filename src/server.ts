@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { createClient } from 'redis';
 import authRoutes from './interfaces/routes/auth.routes';
 import healthCheckRoutes from './interfaces/routes/health-check.routes';
+import orderRoutes from './interfaces/routes/order.routes';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerDocument } from './app/config/swagger';
 
@@ -32,6 +33,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/auth', authRoutes);
 
 // Rotas privadas
+app.use('/orders', orderRoutes);
 
 // Redis Client
 const redisClient = createClient({
