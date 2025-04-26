@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import prisma from '../../infrastructure/prisma/client';
 import z from 'zod';
+import prisma from '../../app/database/prisma-client';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 
 export const AuthController = {
