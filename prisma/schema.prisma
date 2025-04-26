@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  username      String   @unique
+  usdBalance    Float
+  btcBalance    Float
+  orders        Order[]
+  matches       Match[]  @relation("UserMatches")
+  sellerMatches Match[]  @relation("Seller")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Order {
+  id        Int         @id @default(autoincrement())
+  user      User        @relation(fields: [userId], references: [id])
+  userId    Int
+  type      OrderType
+  amount    Float
+  price     Float
+  status    OrderStatus
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model Match {
+  id        Int      @id @default(autoincrement())
+  buyer     User     @relation("UserMatches", fields: [buyerId], references: [id])
+  buyerId   Int
+  sellerId  Int
+  seller    User     @relation("Seller", fields: [sellerId], references: [id])
+  price     Float
+  volume    Float
+  createdAt DateTime @default(now())
+}
+
+enum OrderType {
+  BUY
+  SELL
+}
+
+enum OrderStatus {
+  OPEN
+  PARTIALLY_FILLED
+  FILLED
+  CANCELED
+}
