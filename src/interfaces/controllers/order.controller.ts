@@ -3,6 +3,8 @@ import { z } from 'zod';
 import prisma from '../../app/database/prisma-client';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { OrderQueue } from '../../app/redis/order-queue';
+import { OrderSocketHandler } from '../websocket-handlers/order-socket-handler';
+
 export class OrderController {
   static async createOrder(req: AuthenticatedRequest, res: Response) {
     const schema = z.object({
@@ -33,6 +35,7 @@ export class OrderController {
       });
 
       await OrderQueue.addOrder(order);
+      OrderSocketHandler.broadcastNewOrder(order);
 
       res.status(201).json(order);
     } catch (error) {

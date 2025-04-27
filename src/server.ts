@@ -1,6 +1,5 @@
 import express from 'express';
 import http from 'http';
-import { Server as SocketIOServer } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { createClient } from 'redis';
@@ -9,17 +8,14 @@ import healthCheckRoutes from './interfaces/routes/health-check.routes';
 import orderRoutes from './interfaces/routes/order.routes';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerDocument } from './app/config/swagger';
+import { initSocketServer } from './app/websocket/socket-server';
 
 // Carrega variáveis de ambiente
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
-const io = new SocketIOServer(server, {
-  cors: {
-    origin: "*",
-  }
-});
+initSocketServer(server);
 
 // Middleware
 app.use(cors());
@@ -41,11 +37,6 @@ const redisClient = createClient({
 });
 
 redisClient.on('error', (err) => console.error('Redis Client Error', err));
-
-// Socket.io básico (placeholder pra já testar)
-io.on('connection', (socket) => {
-  console.log(`Client connected: ${socket.id}`);
-});
 
 // Inicialização do servidor
 const PORT = process.env.PORT || 3000;

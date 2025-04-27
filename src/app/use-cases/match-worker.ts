@@ -2,7 +2,7 @@ import { OrderMatchingService } from '../../domain/services/order-matching.servi
 import { Order, OrderType } from '../../domain/entities/order.entity';
 import { OrderQueue } from '../../app/redis/order-queue';
 import prisma from '../../app/database/prisma-client';
-
+import { OrderSocketHandler } from '../../interfaces/websocket-handlers/order-socket-handler';
 export class MatchingWorker {
   static async processOrders() {
     console.log('🛠️ MatchingWorker started...');
@@ -60,11 +60,21 @@ export class MatchingWorker {
             updatedAt: updated.updatedAt,
           },
         });
+
+        // Emitir atualização de ordem
+        OrderSocketHandler.broadcastNewOrder({
+          id: updated.id,
+          userId: updated.userId,
+          type: updated.type,
+          amount: updated.amount,
+          price: updated.price,
+          status: updated.status,
+        });
       }
 
       // Salvar matches
       for (const match of matches) {
-        await prisma.match.create({
+        const createdMatch = await prisma.match.create({
           data: {
             buyerId: match.buyerId,
             sellerId: match.sellerId,
@@ -72,6 +82,9 @@ export class MatchingWorker {
             volume: match.volume,
           },
         });
+        
+        // Emitir evento de novo match via WebSocket
+        OrderSocketHandler.broadcastNewMatch(createdMatch);
       }
 
       console.log(`✅ Order ${orderData.id} processed: ${matches.length} matches created.`);
