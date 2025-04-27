@@ -3,8 +3,18 @@ import { Order, OrderType } from '../../domain/entities/order.entity';
 import { OrderQueue } from '../../app/redis/order-queue';
 import prisma from '../../app/database/prisma-client';
 import { OrderSocketHandler } from '../../interfaces/websocket-handlers/order-socket-handler';
+import { StatisticsService } from '../../domain/services/statistics.service';
+import { PrismaStatisticsRepository } from '../../infrastructure/prisma/prisma-statistics-repo';
+
 export class MatchingWorker {
-  static async processOrders() {
+  private statisticsService: StatisticsService;
+
+  constructor() {
+    const statisticsRepository = new PrismaStatisticsRepository();
+    this.statisticsService = new StatisticsService(statisticsRepository);
+  }
+
+  async processOrders() {
     console.log('🛠️ MatchingWorker started...');
 
     while (true) {
@@ -86,6 +96,9 @@ export class MatchingWorker {
         // Emitir evento de novo match via WebSocket
         OrderSocketHandler.broadcastNewMatch(createdMatch);
       }
+
+      // Atualizar estatísticas
+      await this.statisticsService.updateStatistics();
 
       console.log(`✅ Order ${orderData.id} processed: ${matches.length} matches created.`);
     }
