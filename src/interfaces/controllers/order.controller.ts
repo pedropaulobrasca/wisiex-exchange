@@ -4,6 +4,8 @@ import prisma from '../../app/database/prisma-client';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { OrderQueue } from '../../app/redis/order-queue';
 import { OrderSocketHandler } from '../websocket-handlers/order-socket-handler';
+import { PrismaOrderRepository } from '../../infrastructure/prisma/prisma-order-repo';
+import { Order } from '../../domain/entities/order.entity';
 
 export class OrderController {
   static async createOrder(req: AuthenticatedRequest, res: Response) {
@@ -24,17 +26,29 @@ export class OrderController {
     try {
       const userId = req.user!.id;
 
-      const order = await prisma.order.create({
-        data: {
-          userId,
-          type,
-          amount,
-          price,
-          status: 'OPEN',
-        },
+      const orderRepository = new PrismaOrderRepository();
+
+      const orderEntity = new Order({
+        userId: userId,
+        type,
+        amount,
+        price,
+        status: 'OPEN',
       });
 
-      await OrderQueue.addOrder(order);
+      const order = await orderRepository.create(orderEntity);
+
+      await OrderQueue.addOrder({
+        id: order.id as string,
+        userId: order.userId,
+        type: order.type,
+        amount: order.amount,
+        price: order.price,
+        status: order.status,
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt
+      });
+      
       OrderSocketHandler.broadcastNewOrder(order);
 
       res.status(201).json(order);
