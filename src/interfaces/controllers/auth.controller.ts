@@ -3,9 +3,13 @@ import jwt from 'jsonwebtoken';
 import z from 'zod';
 import prisma from '../../app/database/prisma-client';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
+import { PrismaUserRepository } from '../../infrastructure/prisma/prisma-user-repo';
+import { User } from '../../domain/entities/user.entity';
 
 export const AuthController = {
   login: async (req: Request, res: Response) => {
+    const userRepository = new PrismaUserRepository();
+    
     const schema = z.object({
       username: z.string().min(1),
     });
@@ -18,18 +22,14 @@ export const AuthController = {
 
     const { username } = result.data;
 
-    let user = await prisma.user.findUnique({
-      where: { username },
-    });
+    let user = await userRepository.findByUsername(username);
 
     if (!user) {
-      user = await prisma.user.create({
-        data: {
-          username,
-          usdBalance: 100_000,
-          btcBalance: 100,
-        },
-      });
+      user = await userRepository.create(new User({
+        username,
+        usdBalance: 100_000,
+        btcBalance: 100,
+      }));
     }
 
     const token = jwt.sign(
