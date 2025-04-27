@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 export interface AuthenticatedRequest extends Request {
   user?: {
-    id: number;
+    id: string;
     username: string;
   };
 }
@@ -18,7 +18,7 @@ export function ensureAuthenticated(req: AuthenticatedRequest, res: Response, ne
   const [, token] = authHeader.split(' ');
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: number, username: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string, username: string };
     
     req.user = {
       id: decoded.userId,

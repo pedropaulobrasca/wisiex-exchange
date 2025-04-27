@@ -6,7 +6,7 @@ CREATE TYPE "OrderStatus" AS ENUM ('OPEN', 'PARTIALLY_FILLED', 'FILLED', 'CANCEL
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" SERIAL NOT NULL,
+    "id" UUID NOT NULL,
     "username" TEXT NOT NULL,
     "usdBalance" DOUBLE PRECISION NOT NULL,
     "btcBalance" DOUBLE PRECISION NOT NULL,
@@ -18,8 +18,8 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "Order" (
-    "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "id" UUID NOT NULL,
+    "userId" UUID NOT NULL,
     "type" "OrderType" NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
@@ -32,9 +32,9 @@ CREATE TABLE "Order" (
 
 -- CreateTable
 CREATE TABLE "Match" (
-    "id" SERIAL NOT NULL,
-    "buyerId" INTEGER NOT NULL,
-    "sellerId" INTEGER NOT NULL,
+    "id" UUID NOT NULL,
+    "buyerId" UUID NOT NULL,
+    "sellerId" UUID NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
     "volume" DOUBLE PRECISION NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
