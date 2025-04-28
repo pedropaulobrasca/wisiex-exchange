@@ -42,15 +42,15 @@ export const AuthController = {
   },
 
   getUser: async (req: AuthenticatedRequest, res: Response) => {
+    const userRepository = new PrismaUserRepository();
+
     if (!req.user) {
       return res.status(401).json({ message: 'User not authenticated' });
     }
-    
+
     const userId = req.user.id;
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
+    const user = await userRepository.findById(userId);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });

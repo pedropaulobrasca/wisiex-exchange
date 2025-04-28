@@ -38,4 +38,23 @@ export class PrismaUserRepository implements UserRepository {
       updatedAt: createdUser.updatedAt,
     });
   }
+
+  async findById(id: string): Promise<User | null> {
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) return null;
+
+    return new User({
+      id: user.id,
+      username: user.username,
+      usdBalance: user.usdBalance,
+      btcBalance: user.btcBalance,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    });
+  }
 }
