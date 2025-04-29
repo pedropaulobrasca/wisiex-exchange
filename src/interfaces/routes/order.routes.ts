@@ -16,4 +16,10 @@ router.delete('/:orderId', (req: Request, res: Response) => {
   });
 });
 
+router.get('/', (req: Request, res: Response) => {
+  ensureAuthenticated(req, res, () => {
+    OrderController.getActiveOrders(req, res);
+  });
+});
+
 export default router;

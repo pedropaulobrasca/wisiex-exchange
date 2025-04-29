@@ -41,3 +41,7 @@ Authorization: Bearer {{token}}
 ### Cancel Order
 DELETE {{base_url}}/orders/1f1bdaab-7033-496d-9eda-3d8b2f99330f
 Authorization: Bearer {{token}}
+
+### Get Active Orders
+GET {{base_url}}/orders
+Authorization: Bearer {{token}}

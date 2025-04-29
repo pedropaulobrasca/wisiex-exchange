@@ -27,8 +27,8 @@
 - [x] Criação de novas ordens BUY/SELL implementada.
 
 #### 2.4 My Active Orders
-- [ ] Falta criar endpoint para listar ordens ativas.
-- [ ] Falta implementar Cancelamento de Ordens.
+- [X] Falta criar endpoint para listar ordens ativas.
+- [X] Falta implementar Cancelamento de Ordens.
 
 #### 2.5 My History
 - [ ] Falta criar endpoint para listar histórico de matches do usuário.
@@ -47,7 +47,7 @@
 | Estatísticas globais           | ✅       | OK |
 | Histórico global de Matches    | ⚠️        | Falta endpoint |
 | Formulário Buy/Sell (backend)  | ✅       | OK |
-| Minhas Ordens Ativas           | ⚠️        | Falta listar e cancelar |
+| Minhas Ordens Ativas           | ✅       | OK |
 | Meu Histórico de Matches       | ❌       | Falta |
 | Livro de Ofertas (Order Book)   | ❌       | Falta |
 

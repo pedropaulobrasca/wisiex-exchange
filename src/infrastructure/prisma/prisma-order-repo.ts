@@ -70,4 +70,29 @@ export class PrismaOrderRepository implements OrderRepository {
       updatedAt: order.updatedAt,
     }));
   }
+
+  async findActiveOrdersByUserId(userId: string): Promise<Order[]> {
+    const orders = await prisma.order.findMany({
+      where: {
+        userId,
+        status: {
+          in: ['OPEN', 'PARTIALLY_FILLED'],
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  
+    return orders.map(order => new Order({
+      id: order.id,
+      userId: order.userId,
+      type: order.type as OrderType,
+      amount: order.amount,
+      price: order.price,
+      status: order.status as OrderStatus,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+    }));
+  }
 }

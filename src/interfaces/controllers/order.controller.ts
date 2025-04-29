@@ -82,4 +82,11 @@ export class OrderController {
       res.status(400).json({ error: error.message });
     }
   }
+
+  static async getActiveOrders(req: AuthenticatedRequest, res: Response) {
+    const userId = req.user!.id;
+    const orderRepository = new PrismaOrderRepository();
+    const activeOrders = await orderRepository.findActiveOrdersByUserId(userId);
+    res.status(200).json(activeOrders);
+  }
 }
