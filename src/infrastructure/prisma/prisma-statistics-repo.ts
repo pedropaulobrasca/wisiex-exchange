@@ -1,4 +1,4 @@
-import prisma from "../../app/database/prisma-client";
+import prisma from "../../application/database/prisma-client";
 import { Match } from "../../domain/entities/match.entity";
 import { StatisticsRepository } from "../../domain/repositories/statistics.repository";
 

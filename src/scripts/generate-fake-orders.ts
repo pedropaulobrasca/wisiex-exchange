@@ -1,6 +1,6 @@
-import prisma from '../app/database/prisma-client';
+import prisma from '../application/database/prisma-client';
 import { faker } from '@faker-js/faker';
-import { OrderQueue } from '../app/redis/order-queue';
+import { OrderQueue } from '../application/redis/order-queue';
 
 async function generateFakeData() {
   console.log('🛠️ Generating fake users and orders...');

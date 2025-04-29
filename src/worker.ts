@@ -1,4 +1,4 @@
-import { MatchingWorker } from './app/use-cases/match-worker';
+import { MatchingWorker } from './application/use-cases/match-worker';
 import dotenv from 'dotenv';
 
 dotenv.config();

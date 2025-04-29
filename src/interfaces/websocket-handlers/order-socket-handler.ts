@@ -1,4 +1,4 @@
-import { getIO } from "../../app/websocket/socket-server";
+import { getIO } from "../../application/websocket/socket-server";
 
 export class OrderSocketHandler {
   static broadcastNewOrder(order: any) {

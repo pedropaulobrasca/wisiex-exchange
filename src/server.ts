@@ -7,8 +7,8 @@ import authRoutes from './interfaces/routes/auth.routes';
 import healthCheckRoutes from './interfaces/routes/health-check.routes';
 import orderRoutes from './interfaces/routes/order.routes';
 import swaggerUi from 'swagger-ui-express';
-import { swaggerDocument } from './app/config/swagger';
-import { initSocketServer } from './app/websocket/socket-server';
+import { swaggerDocument } from './application/config/swagger';
+import { initSocketServer } from './application/websocket/socket-server';
 
 // Carrega variáveis de ambiente
 dotenv.config();

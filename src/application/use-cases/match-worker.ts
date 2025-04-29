@@ -1,7 +1,7 @@
 import { OrderMatchingService } from '../../domain/services/order-matching.service';
 import { Order, OrderType } from '../../domain/entities/order.entity';
-import { OrderQueue } from '../../app/redis/order-queue';
-import prisma from '../../app/database/prisma-client';
+import { OrderQueue } from '../../application/redis/order-queue';
+import prisma from '../../application/database/prisma-client';
 import { OrderSocketHandler } from '../../interfaces/websocket-handlers/order-socket-handler';
 import { StatisticsService } from '../../domain/services/statistics.service';
 import { PrismaStatisticsRepository } from '../../infrastructure/prisma/prisma-statistics-repo';

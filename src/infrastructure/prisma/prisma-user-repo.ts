@@ -1,6 +1,6 @@
 import { UserRepository } from '../../domain/repositories/user.repository';
 import { User } from '../../domain/entities/user.entity';
-import prisma from '../../app/database/prisma-client';
+import prisma from '../../application/database/prisma-client';
 
 export class PrismaUserRepository implements UserRepository {
   async findByUsername(username: string): Promise<User | null> {

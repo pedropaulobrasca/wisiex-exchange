@@ -1,6 +1,6 @@
 import { OrderRepository } from '../../domain/repositories/order.repository';
 import { Order, OrderType, OrderStatus } from '../../domain/entities/order.entity';
-import prisma from '../../app/database/prisma-client';
+import prisma from '../../application/database/prisma-client';
 
 export class PrismaOrderRepository implements OrderRepository {
   async create(order: Order): Promise<Order> {

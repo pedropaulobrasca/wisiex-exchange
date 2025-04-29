@@ -1,8 +1,8 @@
 import { Response } from 'express';
 import { z } from 'zod';
-import prisma from '../../app/database/prisma-client';
+import prisma from '../../application/database/prisma-client';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
-import { OrderQueue } from '../../app/redis/order-queue';
+import { OrderQueue } from '../../application/redis/order-queue';
 import { OrderSocketHandler } from '../websocket-handlers/order-socket-handler';
 import { PrismaOrderRepository } from '../../infrastructure/prisma/prisma-order-repo';
 import { Order } from '../../domain/entities/order.entity';

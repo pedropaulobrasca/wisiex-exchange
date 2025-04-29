@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import z from 'zod';
-import prisma from '../../app/database/prisma-client';
+import prisma from '../../application/database/prisma-client';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { PrismaUserRepository } from '../../infrastructure/prisma/prisma-user-repo';
 import { User } from '../../domain/entities/user.entity';
