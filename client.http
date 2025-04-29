@@ -37,3 +37,7 @@ Authorization: Bearer {{token}}
   "amount": 0.1,
   "price": 55000
 }
+
+### Cancel Order
+DELETE {{base_url}}/orders/1f1bdaab-7033-496d-9eda-3d8b2f99330f
+Authorization: Bearer {{token}}

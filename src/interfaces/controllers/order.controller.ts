@@ -1,11 +1,11 @@
 import { Response } from 'express';
 import { z } from 'zod';
-import prisma from '../../application/database/prisma-client';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { OrderQueue } from '../../application/redis/order-queue';
 import { OrderSocketHandler } from '../websocket-handlers/order-socket-handler';
 import { PrismaOrderRepository } from '../../infrastructure/prisma/prisma-order-repo';
 import { Order } from '../../domain/entities/order.entity';
+import { CancelOrder } from '../../application/use-cases/cancel-order';
 
 export class OrderController {
   static async createOrder(req: AuthenticatedRequest, res: Response) {
@@ -55,6 +55,31 @@ export class OrderController {
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Failed to create order' });
+    }
+  }
+
+  static async cancelOrder(req: AuthenticatedRequest, res: Response) {
+    const userId = req.user!.id;
+    const schema = z.object({
+      orderId: z.string(),
+    });
+
+    const result = schema.safeParse(req.params);
+
+    if (!result.success) {
+      return res.status(400).json({ message: 'Invalid request', errors: result.error.errors });
+    }
+
+    const { orderId } = result.data;
+    
+    const orderRepository = new PrismaOrderRepository();
+    const cancelOrder = new CancelOrder(orderRepository);
+
+    try {
+      await cancelOrder.execute(orderId, userId);
+      res.status(204).send();
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
     }
   }
 }

@@ -4,7 +4,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 async function start() {
-  await MatchingWorker.processOrders();
+  const matchingWorker = new MatchingWorker();
+  await matchingWorker.processOrders();
 }
 
 start();

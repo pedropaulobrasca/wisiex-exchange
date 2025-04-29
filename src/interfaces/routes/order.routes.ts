@@ -10,4 +10,10 @@ router.post('/', (req: Request, res: Response) => {
   });
 });
 
+router.delete('/:orderId', (req: Request, res: Response) => {
+  ensureAuthenticated(req, res, () => {
+    OrderController.cancelOrder(req, res);
+  });
+});
+
 export default router;
