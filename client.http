@@ -45,3 +45,11 @@ Authorization: Bearer {{token}}
 ### Get Active Orders
 GET {{base_url}}/orders
 Authorization: Bearer {{token}}
+
+### Get Matches
+GET {{base_url}}/matches
+Authorization: Bearer {{token}}
+
+### Get My Matches
+GET {{base_url}}/matches/my-matches
+Authorization: Bearer {{token}}

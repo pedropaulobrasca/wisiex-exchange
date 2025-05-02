@@ -9,6 +9,7 @@ import orderRoutes from './interfaces/routes/order.routes';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerDocument } from './application/config/swagger';
 import { initSocketServer } from './application/websocket/socket-server';
+import matchesRoutes from './interfaces/routes/match.routes';
 
 // Carrega variáveis de ambiente
 dotenv.config();
@@ -30,6 +31,7 @@ app.use('/auth', authRoutes);
 
 // Rotas privadas
 app.use('/orders', orderRoutes);
+app.use('/matches', matchesRoutes);
 
 // Redis Client
 const redisClient = createClient({

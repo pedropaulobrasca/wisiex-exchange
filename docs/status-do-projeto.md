@@ -21,7 +21,7 @@
 
 #### 2.2 Global Matches
 - [x] Matches globais sendo gerados corretamente.
-- [ ] Falta criar o endpoint `/matches` para listar.
+- [x] Falta criar o endpoint `/matches` para listar.
 
 #### 2.3 Buy and Sell
 - [x] Criação de novas ordens BUY/SELL implementada.
