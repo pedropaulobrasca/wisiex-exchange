@@ -18,6 +18,8 @@ describe('StatisticsService', () => {
     statisticsRepositoryMock = {
       findLastMatch: jest.fn(),
       findMatchesFromLast24Hours: jest.fn(),
+      getLastMatch: jest.fn(),
+      getMatchesSince: jest.fn(),
     };
   });
 
