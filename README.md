@@ -77,7 +77,7 @@ npm run worker
 ```
 
 Acesse em `http://localhost:3333`  
-Swagger: `http://localhost:3333/api/docs`
+Swagger: `http://localhost:3333/docs`
 REST Client (extensão do VSCode): `client.http`
 
 ---
