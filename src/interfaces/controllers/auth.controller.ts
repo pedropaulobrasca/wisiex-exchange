@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
 import z from 'zod';
-import prisma from '../../application/database/prisma-client';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { PrismaUserRepository } from '../../infrastructure/prisma/prisma-user-repo';
-import { User } from '../../domain/entities/user.entity';
+import { LoginUser } from '../../application/use-cases/login-user';
+import { GetUser } from '../../application/use-cases/get-user';
 
-export const AuthController = {
-  login: async (req: Request, res: Response) => {
+export class AuthController {
+  static async login(req: Request, res: Response) {
     const userRepository = new PrismaUserRepository();
+    const loginUser = new LoginUser(userRepository);
     
     const schema = z.object({
       username: z.string().min(1),
@@ -22,27 +22,18 @@ export const AuthController = {
 
     const { username } = result.data;
 
-    let user = await userRepository.findByUsername(username);
-
-    if (!user) {
-      user = await userRepository.create(new User({
-        username,
-        usdBalance: 100_000,
-        btcBalance: 100,
-      }));
+    try {
+      const { token } = await loginUser.execute(username);
+      res.status(200).json({ token });
+    } catch (error: any) {
+      console.error('Erro ao fazer login:', error);
+      res.status(500).json({ error: error.message });
     }
+  }
 
-    const token = jwt.sign(
-      { userId: user.id, username: user.username },
-      process.env.JWT_SECRET as string,
-      { expiresIn: '1h' }
-    );
-
-    res.status(200).json({ token });
-  },
-
-  getUser: async (req: AuthenticatedRequest, res: Response) => {
+  static async getUser(req: AuthenticatedRequest, res: Response) {
     const userRepository = new PrismaUserRepository();
+    const getUserUseCase = new GetUser(userRepository);
 
     if (!req.user) {
       return res.status(401).json({ message: 'User not authenticated' });
@@ -50,12 +41,15 @@ export const AuthController = {
 
     const userId = req.user.id;
 
-    const user = await userRepository.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    try {
+      const user = await getUserUseCase.execute(userId);
+      res.status(200).json(user);
+    } catch (error: any) {
+      if (error.message === 'Usuário não encontrado') {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      console.error('Erro ao obter usuário:', error);
+      res.status(500).json({ error: error.message });
     }
-
-    res.status(200).json(user);
-  },
+  }
 }

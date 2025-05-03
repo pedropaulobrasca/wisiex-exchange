@@ -15,4 +15,36 @@ export class PrismaStatisticsRepository implements StatisticsRepository {
       where: { createdAt: { gte: twentyFourHoursAgo } },
     });
   }
+
+  async getLastMatch(): Promise<Match | null> {
+    const match = await prisma.match.findFirst({ 
+      orderBy: { createdAt: 'desc' } 
+    });
+
+    if (!match) return null;
+
+    return new Match({
+      id: match.id,
+      buyerId: match.buyerId,
+      sellerId: match.sellerId,
+      price: match.price,
+      volume: match.volume,
+      createdAt: match.createdAt
+    });
+  }
+
+  async getMatchesSince(date: Date): Promise<Match[]> {
+    const matches = await prisma.match.findMany({
+      where: { createdAt: { gte: date } },
+    });
+
+    return matches.map(match => new Match({
+      id: match.id,
+      buyerId: match.buyerId,
+      sellerId: match.sellerId,
+      price: match.price,
+      volume: match.volume,
+      createdAt: match.createdAt
+    }));
+  }
 }
