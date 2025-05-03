@@ -1,5 +1,6 @@
 import { OrderStatus } from '../../domain/entities/order.entity';
 import { OrderRepository } from '../../domain/repositories/order.repository';
+import { OrderSocketHandler } from '../../interfaces/websocket-handlers/order-socket-handler';
 
 export class CancelOrder {
   constructor(private readonly orderRepository: OrderRepository) {}
@@ -25,5 +26,8 @@ export class CancelOrder {
     order.updateStatus('CANCELED');
 
     await this.orderRepository.update(order);
+    
+    // Emitir evento via socket
+    OrderSocketHandler.broadcastOrderCancelled({ orderId });
   }
 }

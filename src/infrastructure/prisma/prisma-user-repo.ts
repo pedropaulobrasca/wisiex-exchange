@@ -57,4 +57,21 @@ export class PrismaUserRepository implements UserRepository {
       updatedAt: user.updatedAt,
     });
   }
+
+  async getBalance(id: string): Promise<{ btc: number; usd: number } | null> {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        usdBalance: true,
+        btcBalance: true,
+      },
+    });
+
+    if (!user) return null;
+
+    return {
+      btc: user.btcBalance,
+      usd: user.usdBalance,
+    };
+  }
 }

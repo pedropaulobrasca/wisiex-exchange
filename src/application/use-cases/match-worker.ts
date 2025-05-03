@@ -82,8 +82,9 @@ export class MatchingWorker {
         });
       }
 
-      // Salvar matches
+      // Salvar matches e atualizar saldos dos usuários
       for (const match of matches) {
+        // Criar o match
         const createdMatch = await prisma.match.create({
           data: {
             buyerId: match.buyerId,
@@ -93,6 +94,9 @@ export class MatchingWorker {
           },
         });
         
+        // Atualizar saldo dos usuários envolvidos no match
+        await this.updateUserBalances(match.buyerId, match.sellerId, match.price, match.volume);
+        
         // Emitir evento de novo match via WebSocket
         OrderSocketHandler.broadcastNewMatch(createdMatch);
       }
@@ -101,6 +105,71 @@ export class MatchingWorker {
       await this.statisticsService.updateStatistics();
 
       console.log(`✅ Order ${orderData.id} processed: ${matches.length} matches created.`);
+    }
+  }
+
+  // Método para atualizar o saldo dos usuários após um match
+  private async updateUserBalances(buyerId: string, sellerId: string, price: number, volume: number) {
+    try {
+      console.log(`💰 Atualizando saldos - Comprador: ${buyerId}, Vendedor: ${sellerId}, Preço: ${price}, Volume: ${volume}`);
+      
+      // Cálculo do valor total da transação
+      const totalValue = price * volume;
+      
+      // Atualizar saldo do comprador (- USD, + BTC)
+      await prisma.user.update({
+        where: { id: buyerId },
+        data: {
+          usdBalance: { decrement: totalValue },
+          btcBalance: { increment: volume }
+        }
+      });
+      
+      // Atualizar saldo do vendedor (+ USD, - BTC)
+      await prisma.user.update({
+        where: { id: sellerId },
+        data: {
+          usdBalance: { increment: totalValue },
+          btcBalance: { decrement: volume }
+        }
+      });
+      
+      console.log(`✅ Saldos atualizados com sucesso para o match (${buyerId} <-> ${sellerId})`);
+      
+      // Obter e emitir os novos saldos
+      const [buyer, seller] = await Promise.all([
+        prisma.user.findUnique({
+          where: { id: buyerId },
+          select: { id: true, btcBalance: true, usdBalance: true }
+        }),
+        prisma.user.findUnique({
+          where: { id: sellerId },
+          select: { id: true, btcBalance: true, usdBalance: true }
+        })
+      ]);
+      
+      // Emitir evento de atualização de saldo via WebSocket
+      if (buyer) {
+        OrderSocketHandler.broadcastBalanceUpdate({
+          userId: buyer.id,
+          balance: {
+            btc: buyer.btcBalance,
+            usd: buyer.usdBalance
+          }
+        });
+      }
+      
+      if (seller) {
+        OrderSocketHandler.broadcastBalanceUpdate({
+          userId: seller.id,
+          balance: {
+            btc: seller.btcBalance,
+            usd: seller.usdBalance
+          }
+        });
+      }
+    } catch (error) {
+      console.error('❌ Erro ao atualizar saldos após match:', error);
     }
   }
 }

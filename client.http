@@ -57,3 +57,11 @@ Authorization: Bearer {{token}}
 ### Get Order Book
 GET {{base_url}}/order-book
 Authorization: Bearer {{token}}
+
+### Get Statistics
+GET {{base_url}}/statistics
+Authorization: Bearer {{token}}
+
+### Get Balance
+GET {{base_url}}/user/balance
+Authorization: Bearer {{token}}

@@ -11,6 +11,8 @@ import { swaggerDocument } from './application/config/swagger';
 import { initSocketServer } from './application/websocket/socket-server';
 import matchesRoutes from './interfaces/routes/match.routes';
 import { orderBookRoutes } from './interfaces/routes/order-book.routes';
+import statisticsRoutes from './interfaces/routes/statistics.routes';
+import userRoutes from './interfaces/routes/user.routes';
 
 // Carrega variáveis de ambiente
 dotenv.config();
@@ -20,7 +22,10 @@ const server = http.createServer(app);
 initSocketServer(server);
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*'
+}));
+
 app.use(express.json());
 
 // Rotas de saúde e documentação
@@ -34,6 +39,8 @@ app.use('/auth', authRoutes);
 app.use('/orders', orderRoutes);
 app.use('/matches', matchesRoutes);
 app.use('/order-book', orderBookRoutes);
+app.use('/statistics', statisticsRoutes);
+app.use('/user', userRoutes);
 
 // Redis Client
 const redisClient = createClient({
