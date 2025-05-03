@@ -53,3 +53,7 @@ Authorization: Bearer {{token}}
 ### Get My Matches
 GET {{base_url}}/matches/my-matches
 Authorization: Bearer {{token}}
+
+### Get Order Book
+GET {{base_url}}/order-book
+Authorization: Bearer {{token}}
