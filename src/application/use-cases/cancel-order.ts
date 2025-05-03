@@ -1,6 +1,10 @@
 import { OrderStatus } from '../../domain/entities/order.entity';
 import { OrderRepository } from '../../domain/repositories/order.repository';
 import { OrderSocketHandler } from '../../interfaces/websocket-handlers/order-socket-handler';
+import { OrderBookService } from '../../domain/services/order-book.service';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export class CancelOrder {
   constructor(private readonly orderRepository: OrderRepository) {}
@@ -29,5 +33,36 @@ export class CancelOrder {
     
     // Emitir evento via socket
     OrderSocketHandler.broadcastOrderCancelled({ orderId });
+    
+    // Atualizar e transmitir o order book
+    try {
+      console.log('📊 Atualizando order book após cancelamento de ordem...');
+      const orderBookService = new OrderBookService(this.orderRepository);
+      const orderBook = await orderBookService.getOrderBook();
+      OrderSocketHandler.broadcastOrderBookUpdate(orderBook);
+      console.log('✅ Order book atualizado e transmitido com sucesso após cancelamento');
+    } catch (error) {
+      console.error('❌ Erro ao atualizar e transmitir order book após cancelamento:', error);
+    }
+    
+    // Obter e transmitir o saldo atualizado após cancelar a ordem
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, btcBalance: true, usdBalance: true }
+      });
+      
+      if (user) {
+        OrderSocketHandler.broadcastBalanceUpdate({
+          userId: user.id,
+          balance: {
+            btc: user.btcBalance,
+            usd: user.usdBalance
+          }
+        });
+      }
+    } catch (balanceError) {
+      console.error('Erro ao transmitir atualização de saldo após cancelar ordem:', balanceError);
+    }
   }
 }

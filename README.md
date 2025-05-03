@@ -73,6 +73,7 @@ src/
 docker-compose up -d
 npm i
 npm run dev
+npm run worker
 ```
 
 Acesse em `http://localhost:3000`  

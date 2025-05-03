@@ -6,6 +6,10 @@ import { OrderSocketHandler } from '../websocket-handlers/order-socket-handler';
 import { PrismaOrderRepository } from '../../infrastructure/prisma/prisma-order-repo';
 import { Order } from '../../domain/entities/order.entity';
 import { CancelOrder } from '../../application/use-cases/cancel-order';
+import { PrismaClient } from '@prisma/client';
+import { OrderBookService } from '../../domain/services/order-book.service';
+
+const prisma = new PrismaClient();
 
 export class OrderController {
   static async createOrder(req: AuthenticatedRequest, res: Response) {
@@ -49,7 +53,39 @@ export class OrderController {
         updatedAt: order.updatedAt
       });
       
+      // Emitir atualização da nova ordem
       OrderSocketHandler.broadcastNewOrder(order);
+
+      // Atualizar e transmitir o order book
+      try {
+        console.log('📊 Atualizando order book após criação de ordem...');
+        const orderBookService = new OrderBookService(orderRepository);
+        const orderBook = await orderBookService.getOrderBook();
+        OrderSocketHandler.broadcastOrderBookUpdate(orderBook);
+        console.log('✅ Order book atualizado e transmitido com sucesso após criação');
+      } catch (error) {
+        console.error('❌ Erro ao atualizar e transmitir order book após criação:', error);
+      }
+
+      // Obter e transmitir o saldo atualizado após criar a ordem
+      try {
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { id: true, btcBalance: true, usdBalance: true }
+        });
+        
+        if (user) {
+          OrderSocketHandler.broadcastBalanceUpdate({
+            userId: user.id,
+            balance: {
+              btc: user.btcBalance,
+              usd: user.usdBalance
+            }
+          });
+        }
+      } catch (balanceError) {
+        console.error('Erro ao transmitir atualização de saldo após criar ordem:', balanceError);
+      }
 
       res.status(201).json(order);
     } catch (error) {

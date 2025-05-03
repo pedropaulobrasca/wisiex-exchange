@@ -5,13 +5,19 @@ import prisma from '../../application/database/prisma-client';
 import { OrderSocketHandler } from '../../interfaces/websocket-handlers/order-socket-handler';
 import { StatisticsService } from '../../domain/services/statistics.service';
 import { PrismaStatisticsRepository } from '../../infrastructure/prisma/prisma-statistics-repo';
+import { OrderBookService } from '../../domain/services/order-book.service';
+import { PrismaOrderRepository } from '../../infrastructure/prisma/prisma-order-repo';
 
 export class MatchingWorker {
   private statisticsService: StatisticsService;
+  private orderBookService: OrderBookService;
 
   constructor() {
     const statisticsRepository = new PrismaStatisticsRepository();
     this.statisticsService = new StatisticsService(statisticsRepository);
+    
+    const orderRepository = new PrismaOrderRepository();
+    this.orderBookService = new OrderBookService(orderRepository);
   }
 
   async processOrders() {
@@ -21,7 +27,7 @@ export class MatchingWorker {
       const orderData = await OrderQueue.getNextOrder();
 
       if (!orderData) {
-        await new Promise(resolve => setTimeout(resolve, 500)); // Evita busy-wait
+        await new Promise(resolve => setTimeout(resolve, 100)); // Reduzido de 500ms para 100ms
         continue;
       }
 
@@ -103,8 +109,23 @@ export class MatchingWorker {
 
       // Atualizar estatísticas
       await this.statisticsService.updateStatistics();
+      
+      // Atualizar e transmitir o order book em tempo real
+      await this.updateAndBroadcastOrderBook();
 
       console.log(`✅ Order ${orderData.id} processed: ${matches.length} matches created.`);
+    }
+  }
+
+  // Método para atualizar e transmitir o order book em tempo real
+  private async updateAndBroadcastOrderBook() {
+    try {
+      console.log('📊 Atualizando order book...');
+      const orderBook = await this.orderBookService.getOrderBook();
+      OrderSocketHandler.broadcastOrderBookUpdate(orderBook);
+      console.log('✅ Order book atualizado e transmitido com sucesso');
+    } catch (error) {
+      console.error('❌ Erro ao atualizar e transmitir order book:', error);
     }
   }
 

@@ -21,6 +21,14 @@ export class OrderSocketHandler {
     io.emit('orderCancelled', data);
   }
 
+  static broadcastOrderBookUpdate(orderBook: {
+    bids: { price: number; volume: number }[];
+    asks: { price: number; volume: number }[];
+  }) {
+    const io = getIO();
+    io.emit('orderBookUpdate', orderBook);
+  }
+
   static broadcastBalanceUpdate(data: { 
     userId: string, 
     balance: { 
