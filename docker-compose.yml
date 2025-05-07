@@ -1,6 +1,24 @@
 version: '3.9'
 
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wisiex_app
+    restart: always
+    ports:
+      - "3000:3000"
+      - "3334:3334"
+    environment:
+      - PORT=3000
+      - WORKER_PORT=3334
+      - DATABASE_URL=postgresql://wisiex_user:wisiex_pass@postgres:5432/wisiex_db
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+
   postgres:
     image: postgres:14
     container_name: wisiex_postgres
