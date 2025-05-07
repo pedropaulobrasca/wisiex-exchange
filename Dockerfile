@@ -19,6 +19,7 @@ COPY src ./src
 
 # Compilar TypeScript
 RUN npm run build
+RUN ls -la dist/
 
 # Script para iniciar tanto o servidor quanto o worker
 COPY start.sh ./
