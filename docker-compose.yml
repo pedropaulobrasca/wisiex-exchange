@@ -8,13 +8,14 @@ services:
     container_name: wisiex_app
     restart: always
     ports:
-      - "3333:3333"
-      - "3334:3334"
+      - "${PORT:-3000}:${PORT:-3000}"
+      - "${WORKER_PORT:-3334}:${WORKER_PORT:-3334}"
     environment:
-      - PORT=3333
-      - WORKER_PORT=3334
-      - DATABASE_URL=postgresql://wisiex_user:wisiex_pass@postgres:5432/wisiex_db
-      - REDIS_URL=redis://redis:6379
+      - PORT=${PORT}
+      - WORKER_PORT=${WORKER_PORT}
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - JWT_SECRET=${JWT_SECRET}
     depends_on:
       - postgres
       - redis
@@ -24,11 +25,11 @@ services:
     container_name: wisiex_postgres
     restart: always
     environment:
-      POSTGRES_USER: wisiex_user
-      POSTGRES_PASSWORD: wisiex_pass
-      POSTGRES_DB: wisiex_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -37,7 +38,7 @@ services:
     container_name: wisiex_redis
     restart: always
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
 
 volumes:
   postgres_data:
