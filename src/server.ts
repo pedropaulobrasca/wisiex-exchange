@@ -23,7 +23,7 @@ initSocketServer(server);
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONT_URL,
+  origin: '*',
   credentials: true,
 }));
 
