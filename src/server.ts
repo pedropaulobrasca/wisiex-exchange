@@ -23,7 +23,10 @@ initSocketServer(server);
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONT_URL,
+  origin: process.env.NODE_ENV === 'production' ? [
+    'https://wisiex.pedrodev.com.br',
+    'https://api.wisiex.pedrodev.com.br'
+  ] : '*',
   credentials: true,
 }));
 
