@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import http from 'http';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -21,13 +21,20 @@ const app = express();
 const server = http.createServer(app);
 initSocketServer(server);
 
-// Middleware
-app.use(cors({
-  origin: process.env.FRONT_URL || '*',
+// Configurações completas de CORS
+const corsOptions = {
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
+
+// Preflight CORS
+app.options('*', cors(corsOptions));
 
 app.use(express.json());
 
