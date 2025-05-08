@@ -13,20 +13,22 @@ async function start() {
   // Criar um servidor HTTP para inicializar o Socket.IO
   const app = express();
   
-  // Configurações completas de CORS
-  const corsOptions = {
+  // CORS via pacote
+  app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
     credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204
-  };
+    optionsSuccessStatus: 200
+  }));
   
-  app.use(cors(corsOptions));
-  
-  // Preflight CORS
-  app.options('*', cors(corsOptions));
+  // Middleware para responder requisições OPTIONS explicitamente
+  app.options('*', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.status(200).end();
+  });
   
   const server = http.createServer(app);
   
