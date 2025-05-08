@@ -20,6 +20,12 @@ services:
     depends_on:
       - postgres
       - redis
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wisiex.rule=Host(`api.wisiex.pedrodev.com.br`)"
+      - "traefik.http.routers.wisiex.entrypoints=websecure"
+      - "traefik.http.routers.wisiex.tls.certresolver=letsencrypt"
+      - "traefik.http.services.wisiex.loadbalancer.server.port=3333"
 
   postgres:
     image: postgres:14
