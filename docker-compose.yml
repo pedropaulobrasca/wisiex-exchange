@@ -22,12 +22,11 @@ services:
       - redis
     labels:
       - "traefik.enable=true"
-      # API REST
       - "traefik.http.routers.wisiex.rule=Host(`api.wisiex.pedrodev.com.br`)"
       - "traefik.http.routers.wisiex.entrypoints=websecure"
       - "traefik.http.routers.wisiex.tls.certresolver=letsencrypt"
       - "traefik.http.services.wisiex.loadbalancer.server.port=3333"
-      
+
   postgres:
     image: postgres:14
     container_name: wisiex_postgres

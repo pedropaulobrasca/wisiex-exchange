@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -21,22 +21,11 @@ const app = express();
 const server = http.createServer(app);
 initSocketServer(server);
 
-// CORS via pacote
+// Middleware
 app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  origin: process.env.FRONT_URL,
   credentials: true,
-  optionsSuccessStatus: 200
 }));
-
-// Middleware para responder requisições OPTIONS explicitamente
-app.options('*', (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', '*');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.status(200).end();
-});
 
 app.use(express.json());
 

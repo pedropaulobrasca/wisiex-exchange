@@ -12,11 +12,7 @@ export function initSocketServer(server: http.Server) {
   io = new SocketIOServer(server, {
     cors: {
       origin: '*',
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
-      credentials: true
     },
-    transports: ['websocket', 'polling'],
   });
 
   io.on('connection', (socket) => {
