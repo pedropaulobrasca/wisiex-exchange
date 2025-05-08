@@ -23,6 +23,7 @@ echo "- WORKER_PORT: $WORKER_PORT"
 echo "- DATABASE_URL: $(echo $DATABASE_URL | sed 's/:.*.@/:***@/')"
 echo "- REDIS_URL: $REDIS_URL"
 echo "- JWT_SECRET: $(echo $JWT_SECRET | cut -c1-5)***"
+echo "- NODE_ENV: $NODE_ENV"
 
 # Iniciar o worker em segundo plano
 echo "🚀 Iniciando worker..."
