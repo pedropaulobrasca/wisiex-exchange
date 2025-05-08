@@ -64,7 +64,7 @@ src/
 
 ---
 
-## 🔄 Como rodar o projeto
+## 🔄 Como rodar o projeto localmente (Desenvolvimento)
 
 1. Clone o projeto
    ```bash
@@ -72,24 +72,30 @@ src/
    cd wisiex-exchange
    ```
 
-2. Crie o arquivo `.env` com base no `.env.example`
+2. Crie o arquivo `.env` na raiz do projeto
    ```
-   PORT=3333
-   DATABASE_URL=postgresql://wisiex_user:wisiex_pass@localhost:5432/wisiex_db
-   REDIS_URL=redis://localhost:6379
-   JWT_SECRET=secret
-   BASE_URL=http://localhost:3333
+   # Configurações do servidor
+   PORT=3000
    WORKER_PORT=3334
+   
+   # Banco de dados PostgreSQL
+   DATABASE_URL=postgresql://wisiex_user:wisiex_pass@localhost:5432/wisiex_db
+   
+   # Redis
+   REDIS_URL=redis://localhost:6379
+   
+   # Segurança
+   JWT_SECRET=desenvolvimento_local_chave_secreta_12345
    ```
 
-3. Inicie o PostgreSQL e Redis com Docker
+3. Inicie apenas os serviços de banco de dados com Docker Compose
    ```bash
-   docker-compose up -d
+   docker-compose up -d postgres redis
    ```
 
 4. Instale as dependências
    ```bash
-   npm install
+   npm ci
    ```
 
 5. Configure o banco de dados com Prisma
@@ -104,12 +110,12 @@ src/
    npx prisma studio
    ```
 
-6. Inicie o servidor e o worker
+6. Inicie o servidor e o worker em terminais separados
    ```bash
-   # Em um terminal, inicie o servidor principal
+   # Terminal 1: inicie o servidor principal
    npm run dev
    
-   # Em outro terminal, inicie o worker de processamento
+   # Terminal 2: inicie o worker de processamento
    npm run worker
    ```
 
@@ -118,9 +124,57 @@ src/
    npm run faker
    ```
 
-Acesse a API em `http://localhost:3333`  
-Swagger: `http://localhost:3333/docs`  
+Acesse a API em `http://localhost:3000`  
+Swagger: `http://localhost:3000/docs`  
 REST Client (extensão do VSCode): use o arquivo `client.http`
+
+---
+
+## 🚢 Deploy com Coolify
+
+Este projeto está configurado para deploy fácil na plataforma Coolify.
+
+### Pré-requisitos
+- Uma instância do Coolify configurada
+- Acesso ao repositório Git do projeto
+
+### Passos para deploy
+
+1. **No painel do Coolify, crie um novo projeto**
+   - Nome sugerido: "wisiex-exchange"
+
+2. **Adicione os seguintes recursos ao projeto**:
+   - Aplicação Node.js
+   - PostgreSQL (versão 14)
+   - Redis
+
+3. **Configure a aplicação Node.js**:
+   - Fonte: Selecione o repositório Git do projeto
+   - Build settings:
+     - Build command: `./build-coolify.sh` (script pré-configurado para build)
+     - Start command: `./start.sh`
+     - Portas: Mapeie 3000 e 3334 (servidor principal e worker)
+
+4. **Configure as variáveis de ambiente no Coolify**:
+   ```
+   PORT=3000
+   WORKER_PORT=3334
+   DATABASE_URL=postgresql://[usuario_coolify]:[senha_coolify]@[host_postgres]:5432/wisiex_db
+   REDIS_URL=redis://[host_redis]:6379
+   JWT_SECRET=[chave_secreta_forte]
+   POSTGRES_USER=[usuario_bd]
+   POSTGRES_PASSWORD=[senha_bd]
+   POSTGRES_DB=wisiex_db
+   ```
+   Substitua os valores entre colchetes pelos corretos do seu ambiente.
+
+5. **Execute o deploy**
+   - Após o primeiro deploy, as migrações do Prisma serão executadas automaticamente
+   - O script start.sh inicia tanto o servidor principal quanto o worker
+
+6. **Verificação após deploy**:
+   - Acesse a URL fornecida pelo Coolify + `/health` para verificar se está funcionando
+   - Verifique os logs para confirmar que tanto o servidor quanto o worker iniciaram
 
 ---
 
@@ -174,3 +228,25 @@ Para modificar o schema, edite `prisma/schema.prisma` e depois execute:
 ```bash
 npx prisma migrate dev --name nome_da_alteracao
 ```
+
+---
+
+## 🛠 Solução de problemas
+
+### Conexão com Redis
+Se encontrar erros de conexão com Redis, verifique:
+- Se o serviço Redis está rodando (`docker ps` para verificar)
+- Se a variável `REDIS_URL` está configurada corretamente
+- Formato correto: `redis://[host]:6379`
+
+### Conexão com PostgreSQL
+Se encontrar erros de conexão com o banco de dados:
+- Verifique se o serviço PostgreSQL está rodando
+- Confirme se a variável `DATABASE_URL` está correta
+- Para executar migrações manualmente: `DATABASE_URL=... npx prisma migrate deploy`
+
+### Deploy no Coolify
+Se encontrar problemas no deploy com Coolify:
+- Verifique os logs de build e execução
+- Confirme se todas as variáveis de ambiente estão configuradas
+- Se necessário, entre no container e execute `npx prisma migrate deploy` manualmente
