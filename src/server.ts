@@ -23,7 +23,8 @@ initSocketServer(server);
 
 // Middleware
 app.use(cors({
-  origin: '*'
+  origin: process.env.VITE_API_URL,
+  credentials: true,
 }));
 
 app.use(express.json());
