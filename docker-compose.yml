@@ -8,7 +8,7 @@ services:
     container_name: wisiex_app
     restart: always
     ports:
-      - "${PORT:-3000}:${PORT:-3000}"
+      - "${PORT:-3333}:${PORT:-3333}"
       - "${WORKER_PORT:-3334}:${WORKER_PORT:-3334}"
     environment:
       - NODE_ENV=${NODE_ENV}
