@@ -11,13 +11,7 @@ export function initSocketServer(server: http.Server) {
   
   io = new SocketIOServer(server, {
     cors: {
-      origin: process.env.NODE_ENV === 'production' ? [
-        'https://wisiex.pedrodev.com.br',
-        'http://wisiex.pedrodev.com.br',
-        'https://api.wisiex.pedrodev.com.br',
-        'http://api.wisiex.pedrodev.com.br'
-      ] : '*',
-      credentials: true,
+      origin: '*',
     },
   });
 

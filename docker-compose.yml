@@ -28,12 +28,6 @@ services:
       - "traefik.http.routers.wisiex.tls.certresolver=letsencrypt"
       - "traefik.http.services.wisiex.loadbalancer.server.port=3333"
 
-      # API WEBSOCKET
-      - "traefik.http.routers.wisiex-ws.rule=Host(`ws.wisiex.pedrodev.com.br`)"
-      - "traefik.http.routers.wisiex-ws.entrypoints=websecure"
-      - "traefik.http.routers.wisiex-ws.tls.certresolver=letsencrypt"
-      - "traefik.http.services.wisiex-ws.loadbalancer.server.port=3334"
-
   postgres:
     image: postgres:14
     container_name: wisiex_postgres
