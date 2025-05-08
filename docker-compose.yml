@@ -11,6 +11,7 @@ services:
       - "${PORT:-3000}:${PORT:-3000}"
       - "${WORKER_PORT:-3334}:${WORKER_PORT:-3334}"
     environment:
+      - NODE_ENV=${NODE_ENV}
       - PORT=${PORT}
       - WORKER_PORT=${WORKER_PORT}
       - DATABASE_URL=${DATABASE_URL}
