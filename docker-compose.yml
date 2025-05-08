@@ -28,6 +28,27 @@ services:
       - "traefik.http.routers.wisiex.tls.certresolver=letsencrypt"
       - "traefik.http.services.wisiex.loadbalancer.server.port=3333"
       
+      # Middleware CORS para todas as rotas
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowheaders=*"
+      - "traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=*"
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowcredentials=true"
+      - "traefik.http.middlewares.cors.headers.accesscontrolmaxage=3600"
+      - "traefik.http.middlewares.cors.headers.accessControlExposeHeaders=Content-Length,Content-Range"
+      - "traefik.http.middlewares.cors.headers.addvaryheader=true"
+      
+      # Aplicar middleware à API
+      - "traefik.http.routers.wisiex.middlewares=cors@docker"
+      
+      # WebSocket
+      - "traefik.http.routers.wisiex-ws.rule=Host(`api.wisiex.pedrodev.com.br`)"
+      - "traefik.http.routers.wisiex-ws.entrypoints=websecure"
+      - "traefik.http.routers.wisiex-ws.tls.certresolver=letsencrypt"
+      - "traefik.http.services.wisiex-ws.loadbalancer.server.port=3334"
+      
+      # Aplicar middleware ao WebSocket
+      - "traefik.http.routers.wisiex-ws.middlewares=cors@docker"
+
   postgres:
     image: postgres:14
     container_name: wisiex_postgres
