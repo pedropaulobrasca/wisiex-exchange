@@ -23,8 +23,10 @@ initSocketServer(server);
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONT_URL,
+  origin: process.env.FRONT_URL || '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());

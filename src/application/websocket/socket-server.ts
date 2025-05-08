@@ -12,8 +12,9 @@ export function initSocketServer(server: http.Server) {
   io = new SocketIOServer(server, {
     cors: {
       origin: process.env.FRONT_URL || '*',
-      methods: ["GET", "POST"],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       credentials: true,
+      allowedHeaders: ['Content-Type', 'Authorization']
     },
     transports: ['websocket', 'polling'],
   });

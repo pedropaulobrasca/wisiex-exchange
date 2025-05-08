@@ -2,6 +2,7 @@ import { MatchingWorker } from './application/use-cases/match-worker';
 import dotenv from 'dotenv';
 import http from 'http';
 import express from 'express';
+import cors from 'cors';
 import { initSocketServer } from './application/websocket/socket-server';
 
 dotenv.config();
@@ -11,6 +12,15 @@ async function start() {
   
   // Criar um servidor HTTP para inicializar o Socket.IO
   const app = express();
+  
+  // Configuração CORS
+  app.use(cors({
+    origin: process.env.FRONT_URL || '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }));
+  
   const server = http.createServer(app);
   
   // Inicializar o socket server
